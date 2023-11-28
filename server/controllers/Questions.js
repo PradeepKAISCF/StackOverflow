@@ -7,8 +7,8 @@ export const AskQuestion = async (req,res) => {
     const postQuestion = new Questions(postQuestionData);
     try{
         await postQuestion.save();
-        const point = await User.findByIdAndUpdate(postQuestionData.userId,{$inc:{point:10}})
-        res.status(200).json(point.point)
+        const point = await User.findByIdAndUpdate(postQuestionData.userId,{$inc:{point:10}},{new:true})
+        res.status(200).json(point)
     }catch(error){
         console.log(error)
         res.status(409).json("Couldn't post  new questionm");
@@ -33,8 +33,8 @@ export const deleteQuestion = async (req,res) => {
     }
     try {
         await Questions.findByIdAndRemove(_id);
-        await User.findByIdAndUpdate(userId,{$inc:{point:-10}})
-        res.status(200).json({message: "Sucessfully deleted"})
+        const point = await User.findByIdAndUpdate(userId,{$inc:{point:-10}},{new:true})
+        res.status(200).json(point)
     } catch (error) {
         res.status(404).json({message : "Error Occurred"})
     }
@@ -51,35 +51,36 @@ export const voteQuestion = async(req,res) => {
         const userIdposted = question.userId
         const upIndex = question.upVote.findIndex((id) =>id === String(userId))
         const downIndex = question.downVote.findIndex((id) =>id === String(userId))
+        let point;
 
         if (value === 'upVote'){
             if(downIndex !== -1){
                 question.downVote = question.downVote.filter((id) => id !== String(userId))
-                await User.findByIdAndUpdate(userIdposted,{$inc:{point:20}})
+                point = await User.findByIdAndUpdate(userIdposted,{$inc:{point:20}})
             }
             if(upIndex === -1){
                 question.upVote.push(userId)
-                await User.findByIdAndUpdate(userIdposted,{$inc:{point:20}})
+                point = await User.findByIdAndUpdate(userIdposted,{$inc:{point:20}})
             }else{
                 question.upVote = question.upVote.filter((id) => id!==String(userId))
-                await User.findByIdAndUpdate(userIdposted,{$inc:{point:-20}})
+                point = await User.findByIdAndUpdate(userIdposted,{$inc:{point:-20}})
             }
         }
         else if (value === 'downVote'){
             if(upIndex !== -1){
                 question.upVote = question.upVote.filter((id) => id !== String(userId))
-                await User.findByIdAndUpdate(userIdposted,{$inc:{point:-20}})
+                point = await User.findByIdAndUpdate(userIdposted,{$inc:{point:-20}})
             }
             if(downIndex === -1){
                 question.downVote.push(userId)
-                await User.findByIdAndUpdate(userIdposted,{$inc:{point:-20}})
+                point = await User.findByIdAndUpdate(userIdposted,{$inc:{point:-20}})
             }else{
                 question.downVote = question.downVote.filter((id) => id !== String(userId))
-                await User.findByIdAndUpdate(userIdposted,{$inc:{point:20}})
+                point = await User.findByIdAndUpdate(userIdposted,{$inc:{point:20}})
             }
         }
         await Questions.findByIdAndUpdate(_id,question)
-        res.status(200).json({message: "Voted Sucessfully"})
+        res.status(200).json(point)
 
     } catch (error) {
         res.status(404).json({message:"Id not Found"})

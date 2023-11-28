@@ -1,8 +1,7 @@
 import React from "react";
 
 const ProfileBio = ({ currentProfile }) => {
-  const point = localStorage.getItem('point')
-  
+  const point = currentProfile?.point
   return (
     <div>
       <div>

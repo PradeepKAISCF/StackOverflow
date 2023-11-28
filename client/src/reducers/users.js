@@ -6,6 +6,10 @@ const usersReducer = (states = [], action) => {
       return states.map((state) =>
         state._id === action.payload._id ? action.payload : state
       );
+      case "ADD_POINTS":
+      return states.map((state) =>
+        state._id === action.payload._id ? action.payload : state
+      );
     default:
       return states;
   }

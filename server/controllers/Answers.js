@@ -13,8 +13,8 @@ export const postAnswer = async(req,res) => {
     updateNoOfAnswers(_id,noOfAnswers)
     try{
         const updatedQuestion = await Questions.findByIdAndUpdate(_id,{$addToSet:{'answer':[{answerBody,userAnswered,userId: userId}]}})
-        await User.findByIdAndUpdate(userId,{$inc:{point:30}})
-        const point = await User.findById(userId,'point')
+        const point = await User.findByIdAndUpdate(userId,{$inc:{point:30}},{new:true})
+        //const point = await User.findById(userId,'point',{new:true})
         const questionOwner = await Questions.findById(_id)
         await User.findByIdAndUpdate(questionOwner.userId,{$addToSet:{'notification':[{questionid:_id,userPosted: userAnswered}]}})
         const questionuser = await User.findById(questionOwner.userId)
@@ -35,7 +35,7 @@ export const postAnswer = async(req,res) => {
             .catch((error) => {
               console.log("Error sending message:", error);
             });
-        res.status(200).json(point.point)
+        res.status(200).json(point)
     }catch(error){
         res.status(404).json(error)
     }
@@ -65,8 +65,8 @@ export const deleteAnswer = async(req,res) => {
             {_id},
             {$pull:{'answer':{_id:answerId}}}
         )
-        const data = await User.findByIdAndUpdate(userId,{$inc:{point:-30}})
-        res.status(200).json(data.point)
+        const data = await User.findByIdAndUpdate(userId,{$inc:{point:-30}},{new:true})
+        res.status(200).json(data)
     } catch (error) {
         res.status(404).json(error)
     }

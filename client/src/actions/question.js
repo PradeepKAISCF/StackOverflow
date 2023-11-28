@@ -4,8 +4,8 @@ export const askQuestion = (questionData, navigate) => async (dispatch) => {
   try {
     const { data } = await api.postQuestion(questionData);
     dispatch({ type: "POST_QUESTION", payload: data });
-    localStorage.setItem('point', data);
     dispatch(fetchAllQuestions());
+    dispatch({type: "ADD_POINTS",payload:data})
     navigate("/");
   } catch (error) {
     console.log(error);
@@ -23,8 +23,10 @@ export const fetchAllQuestions = () => async (disptach) => {
 
 export const deleteQuestion = (id, userId, navigate) => async (dispatch) => {
   try {
-    await api.deleteQuestion(id,userId);
+    const {data} = await api.deleteQuestion(id,userId);
+    localStorage.setItem('point', data);
     dispatch(fetchAllQuestions());
+    dispatch({type: "ADD_POINTS",payload:data})
     navigate("/");
   } catch (error) {
     console.log(error);
@@ -33,8 +35,9 @@ export const deleteQuestion = (id, userId, navigate) => async (dispatch) => {
 
 export const voteQuestion = (id, value, userId) => async (dispatch) => {
   try {
-    await api.voteQuestion(id, value, userId);
+    const {data} = await api.voteQuestion(id, value, userId);
     dispatch(fetchAllQuestions());
+    dispatch({type: "ADD_POINTS",payload:data})
   } catch (error) {
     console.log(error);
   }
@@ -53,6 +56,7 @@ export const postAnswer = (answerData) => async (dispatch) => {
     dispatch({ type: "POST_ANSWER", payload: data });
     localStorage.setItem('point', data);
     dispatch(fetchAllQuestions());
+    dispatch({type: "ADD_POINTS",payload:data})
   } catch (error) {
     console.log(error);
   }
@@ -63,6 +67,7 @@ export const deleteAnswer = (id, answerId, noOfAnswers, userId) => async (dispat
     const {data} = await api.deleteAnswer(id, answerId, noOfAnswers,userId);
     localStorage.setItem('point', data);
     dispatch(fetchAllQuestions());
+    dispatch({type: "ADD_POINTS",payload:data})
   } catch (error) {
     console.log(error);
   }

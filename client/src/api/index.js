@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://stackoverflow-be1d86034e20.herokuapp.com/",
+  baseURL: "https://stackoverflowclone-f7389aa5696b.herokuapp.com/",
 });
 
 API.interceptors.request.use((req) => {
